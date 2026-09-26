@@ -11,10 +11,17 @@ function showStart(){
   startScreen.classList.add("show");
   gameScreen.classList.remove("show");
 }
+function setBattleBackground(){
+  const sets={easy:["grassland.webp","forest.webp","riverbank.webp"],normal:["ruins.webp","cave.webp","training-ground.webp"],hard:["volcano.webp","sea.webp","sky-island.webp"]};
+  const pool=sets[state.difficulty]||sets.normal;
+  const file=pool[Math.floor(Math.random()*pool.length)];
+  document.getElementById("battleBg").style.backgroundImage=`url("https://tt-sensei.github.io/navi-character-/assets/web/fantasy/backgrounds/${file}")`;
+}
 function startBattle(){
   const active=difficultyButtons.find(b=>b.classList.contains("active"));
   setDifficulty(state,active?.dataset.difficulty||"normal");
   resetGame(state);
+  setBattleBackground();
   startScreen.classList.remove("show");
   gameScreen.classList.add("show");
   setLog("<strong>START</strong>　"+active.textContent+"でバトルスタート。");
@@ -48,6 +55,7 @@ document.getElementById("attack").addEventListener("click",()=>{
     setTimeout(()=>{
       state.locked=false;
       nextEnemy(state);
+      setBattleBackground();
       setLog("<strong>つぎのナビアン！</strong>　"+state.monster[0]+" があらわれた。");
       render(state);
     },1500);
