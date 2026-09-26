@@ -11,13 +11,12 @@ const RECORD_KEY="core-numberbattle-best";
 function getBest(key){try{return Number(JSON.parse(localStorage.getItem(RECORD_KEY)||"{}")[key]||0)}catch(e){return 0}}
 function updateStartRecord(){if(bestRecord)bestRecord.textContent=getBest(document.querySelector("#difficultyButtons button.active")?.dataset.difficulty||"normal")+"体";}
 function saveBest(){const key=state.difficulty;if(state.defeated<=getBest(key))return;try{const data=JSON.parse(localStorage.getItem(RECORD_KEY)||"{}");data[key]=state.defeated;localStorage.setItem(RECORD_KEY,JSON.stringify(data));}catch(e){} updateStartRecord();}
-function showStart(){hideEnd();startScreen.classList.add("show");updateStartRecord();gameScreen.classList.remove("show");}
-function setBattleBackground(){
-  const sets={easy:["grassland.webp","forest.webp","riverbank.webp"],normal:["ruins.webp","cave.webp","training-ground.webp"],hard:["volcano.webp","sea.webp","sky-island.webp"]};
-  const pool=sets[state.difficulty]||sets.normal;
-  const file=pool[Math.floor(Math.random()*pool.length)];
-  document.getElementById("battleBg").style.backgroundImage=`url("https://tt-sensei.github.io/navi-character-/assets/web/fantasy/backgrounds/${file}")`;
-}
+const BACKGROUND_BASE="https://tt-sensei.github.io/navi-character-/assets/web/fantasy/backgrounds/";
+const BATTLE_BACKGROUNDS={easy:["grassland.webp","forest.webp","riverbank.webp"],normal:["ruins.webp","cave.webp","training-ground.webp"],hard:["volcano.webp","sea.webp","sky-island.webp"]};
+function pickBackground(pool){return pool[Math.floor(Math.random()*pool.length)];}
+function setStartBackground(){const bg=document.getElementById("startBg");if(!bg)return;bg.style.backgroundImage=`url("${BACKGROUND_BASE}town.webp")`;}
+function setBattleBackground(){const pool=BATTLE_BACKGROUNDS[state.difficulty]||BATTLE_BACKGROUNDS.normal;document.getElementById("battleBg").style.backgroundImage=`url("${BACKGROUND_BASE}${pickBackground(pool)}")`;}
+function showStart(){hideEnd();startScreen.classList.add("show");updateStartRecord();setStartBackground();gameScreen.classList.remove("show");}
 function startBattle(){
   const active=difficultyButtons.find(b=>b.classList.contains("active"));
   setDifficulty(state,active?.dataset.difficulty||"normal");
