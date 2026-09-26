@@ -85,20 +85,24 @@ export function showEnemyCharge(current=1,max=3){
 }
 export function showEnemyAttack(damage=3){
   const img=document.getElementById("monsterImg");
+  const label=document.getElementById("enemyTurnLabel");
   if(!img)return;
   img.classList.remove("enemy-attack");
   void img.offsetWidth;
   img.classList.add("enemy-attack");
-  const label=document.getElementById("enemyTurnLabel");
   if(label){label.textContent="こうげき！";label.className="enemy-turn-label attacking";}
   showDamage("enemy",damage);
   const hp=document.querySelector(".player");
   if(hp){hp.classList.remove("player-damaged");void hp.offsetWidth;hp.classList.add("player-damaged");}
 }
-
-export function setResult(state,message){
-  document.getElementById("result").textContent=message;
+export function clearEnemyTurn(){
+  const label=document.getElementById("enemyTurnLabel");
+  if(label){label.textContent="";label.className="enemy-turn-label";}
+  const img=document.getElementById("monsterImg");
+  if(img){img.classList.remove("enemy-charge","enemy-attack");}
 }
+
+export function setResult(state,message){document.getElementById("result").textContent=message;}
 export function setLog(html){document.getElementById("log").innerHTML=html;}
 export function showEnd(win){
   document.getElementById("modalTitle").textContent=win?"WIN":"LOSE";
