@@ -57,13 +57,31 @@ export function updateExpression(state){
 export function showDamage(type,damage=0){
   const fx=document.getElementById("damageFx"),text=document.getElementById("damageText");
   if(!fx||!text)return;
-  fx.className="damage-fx "+(type==="break"?"core":"normal");
+  fx.className="damage-fx "+(type==="break"?"core":type==="enemy"?"enemy":"normal");
   playSfx(type);
   text.textContent=type==="break"?"CORE BREAK!":"−"+damage;
   void fx.offsetWidth;
   fx.classList.add("show");
   setTimeout(()=>{fx.className="damage-fx";},1500);
 }
+export function showEnemyHit(){
+  const img=document.getElementById("monsterImg");
+  if(!img)return;
+  img.classList.remove("enemy-hit");
+  void img.offsetWidth;
+  img.classList.add("enemy-hit");
+}
+export function showEnemyAttack(){
+  const img=document.getElementById("monsterImg");
+  if(!img)return;
+  img.classList.remove("enemy-attack");
+  void img.offsetWidth;
+  img.classList.add("enemy-attack");
+  showDamage("enemy",3);
+  const hp=document.querySelector(".player");
+  if(hp){hp.classList.remove("player-damaged");void hp.offsetWidth;hp.classList.add("player-damaged");}
+}
+
 export function setResult(state,message){
   document.getElementById("result").textContent=message;
 }
