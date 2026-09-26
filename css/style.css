@@ -85,7 +85,7 @@ body{padding:10px}
 .difficulty-buttons button.active{border-color:#fff;background:#fff;color:#18243a;box-shadow:0 0 0 2px rgba(255,255,255,.16)}
 .start-button{width:100%;max-width:420px;min-height:58px;border:0;border-radius:15px;background:#3978df;color:#fff;font-size:17px;font-weight:950;letter-spacing:.04em;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,.2)}
 .start-note{margin-top:12px;font-size:11px;color:#8798b0}
-.app{display:none;position:relative}.app.show{display:block}.battle-bg{position:fixed;inset:0;z-index:-1;background-position:center;background-size:cover;background-repeat:no-repeat;filter:saturate(.72) brightness(.72);transform:scale(1.03)}.app:after{content:"";position:fixed;inset:0;z-index:-1;background:rgba(238,242,247,.38);pointer-events:none}
+.app{display:none;position:relative;z-index:0}.app.show{display:block}.battle-bg{position:fixed;inset:0;z-index:0;background-position:center;background-size:cover;background-repeat:no-repeat;filter:saturate(.72) brightness(.72);transform:scale(1.03)}.app:after{content:"";position:fixed;inset:0;z-index:0;background:rgba(238,242,247,.38);pointer-events:none}
 @media(min-width:800px) and (orientation:landscape){.app.show{display:grid}}
 
 /* battle-oriented layout */
