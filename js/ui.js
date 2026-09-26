@@ -31,7 +31,7 @@ export function updateExpression(state){
     return (s.sign===1?"＋":"−")+n;
   }).join("");
   const total=currentCalc(state);
-  expression.textContent=expr+" ＝ "+total;
+  expression.textContent=expr+" ＝";
   result.textContent=total<0?"0未満にはできません":"コアまであと "+Math.abs(state.core-total);
 }
 export function setResult(state,message){
