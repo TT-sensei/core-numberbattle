@@ -4,10 +4,10 @@ import {NAVIAN_MONSTERS} from "./monsters.js";
 const rnd=(min,max)=>Math.floor(Math.random()*(max-min+1))+min;
 
 export function createGame(){
-  return {enemyHP:ENEMY_MAX,playerHP:PLAYER_MAX,core:0,hand:[],selected:[],locked:false,monster:null,resetAvailable:true,lastTotal:null};
+  return {enemyHP:ENEMY_MAX,playerHP:PLAYER_MAX,core:0,hand:[],selected:[],locked:false,monster:null,resetAvailable:true,lastTotal:null,enemyCharge:0,defeated:0};
 }
 export function resetGame(state){
-  state.enemyHP=ENEMY_MAX; state.playerHP=PLAYER_MAX; state.locked=false;
+  state.enemyHP=ENEMY_MAX; state.playerHP=PLAYER_MAX; state.locked=false; state.enemyCharge=0; state.defeated=0;
   state.monster=NAVIAN_MONSTERS[rnd(0,NAVIAN_MONSTERS.length-1)];
   startTurn(state);
 }
@@ -50,17 +50,24 @@ function baseDamage(diff){
 }
 function bonus(n){if(n>=4)return 2;if(n>=3)return 1;return 0;}
 
+export function nextEnemy(state){
+  state.enemyHP=ENEMY_MAX;
+  state.enemyCharge=0;
+  state.monster=NAVIAN_MONSTERS[rnd(0,NAVIAN_MONSTERS.length-1)];
+  startTurn(state);
+}
+
 export function attack(state){
   if(state.locked||state.selected.length===0)return {type:"none"};
   const total=currentCalc(state),used=state.selected.length;
   state.lastTotal=total;
   if(total<0){
     state.playerHP=Math.max(0,state.playerHP-3);
-    return {type:"fail",message:"こたえが0みまんになった。",result:"0みまんにはできません",total};
+    return {type:"fail",message:"こたえが0みまんになった。",result:"こうげきしっぱい",total,enemyAttack:true,enemyDamage:3};
   }
   if(total>state.core){
     state.playerHP=Math.max(0,state.playerHP-3);
-    return {type:"fail",message:"コアを "+(total-state.core)+" こえた！",result:"こうげきしっぱい",total};
+    return {type:"fail",message:"コアを "+(total-state.core)+" こえた！",result:"こうげきしっぱい",total,enemyAttack:true,enemyDamage:3};
   }
   const diff=state.core-total;
   if(diff===0){
@@ -69,11 +76,17 @@ export function attack(state){
   }
   if(diff>10){
     state.playerHP=Math.max(0,state.playerHP-3);
-    return {type:"fail",message:"コアからとおすぎた。",result:"ダメージ 0",total};
+    return {type:"fail",message:"コアからとおすぎた。",result:"こうげきしっぱい",total,enemyAttack:true,enemyDamage:3};
   }
   const dmg=baseDamage(diff)+bonus(used);
   state.enemyHP=Math.max(0,state.enemyHP-dmg);
-  return {type:"hit",damage:dmg,diff,used,message:"コアとの差は "+diff+"。",result:"ダメージ "+dmg+"（"+used+"枚）",total};
+  state.enemyCharge++;
+  const enemyAttack=state.enemyCharge>=3;
+  if(enemyAttack){
+    state.enemyCharge=0;
+    state.playerHP=Math.max(0,state.playerHP-3);
+  }
+  return {type:"hit",damage:dmg,diff,used,message:"コアとの差は "+diff+"。",result:"ダメージ "+dmg+"（"+used+"枚）",total,enemyAttack,enemyDamage:enemyAttack?3:0};
 }
 export function isWin(state){return state.enemyHP<=0;}
 export function isLose(state){return state.playerHP<=0;}
