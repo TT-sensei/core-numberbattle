@@ -1,4 +1,150 @@
-import {DIFFICULTIES,PLAYER_MAX,CORE_MIN,CORE_MAX,DEFAULT_DIFFICULTY} from "./constants.js";
+import {DIFFICULTIES,PLAYER_MAX,DEFAULT_DIFFICULTY} from "./constants.js";
+import {getMonsterPool} from "./monsters.js";
+
+const rnd=(min,max)=>Math.floor(Math.random()*(max-min+1))+min;
+
+// ===== コアバトル: 逆算方式によるコア&手札生成 =====
+// 生成した手札から、実際のゲームルールで成立するコアを逆算する。
+// ・使用枚数は3枚または4枚
+// ・＋/−の組み合わせには−を最低1つ含める
+// ・コアは15〜30
+// ・完成した4枚の手札で、1〜2枚だけでもコアに届いてしまう場合は作り直す
+
+function randomCard() {
+  return Math.floor(Math.random() * 9) + 1;
+}
+
+// cards に対して + / − の全パターンを試す。
+// 最初のカードは + として扱う。
+// （ゲーム中も最初に選んだカードは必ず + になる）
+function allSignedResults(cards) {
+  const n = cards.length;
+  const results = [];
+  if (n === 0) return results;
+
+  const totalPatterns = 1 << (n - 1);
+
+  for (let pattern = 0; pattern < totalPatterns; pattern++) {
+    let value = cards[0];
+    let minusCount = 0;
+
+    for (let i = 1; i < n; i++) {
+      const isMinus = (pattern >> (i - 1)) & 1;
+      if (isMinus) {
+        value -= cards[i];
+        minusCount++;
+      } else {
+        value += cards[i];
+      }
+    }
+
+    if (value >= 0) {
+      results.push({ value, minusCount });
+    }
+  }
+
+  return results;
+}
+
+// 4枚の手札について、1〜4枚使用時の全組み合わせを調べる。
+// 4枚なら合計40パターン程度。
+function allPossibleResults(cards) {
+  const n = cards.length;
+  const results = [];
+
+  for (let subsetMask = 1; subsetMask < (1 << n); subsetMask++) {
+    const subset = [];
+    for (let i = 0; i < n; i++) {
+      if ((subsetMask >> i) & 1) subset.push(cards[i]);
+    }
+
+    const signed = allSignedResults(subset);
+    for (const r of signed) {
+      results.push({
+        value: r.value,
+        cardCount: subset.length,
+        minusCount: r.minusCount
+      });
+    }
+  }
+
+  return results;
+}
+
+function hasAccidentalMatch(results, core) {
+  return results.some(
+    (r) => r.cardCount <= 2 && r.value === core
+  );
+}
+
+function hasValidSolution(results, core) {
+  return results.some(
+    (r) =>
+      r.value === core &&
+      r.cardCount >= 3 &&
+      r.minusCount >= 1
+  );
+}
+
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
+// コアと4枚の手札を、条件を満たすまで生成する。
+export function generateCoreAndHand() {
+  const MAX_ATTEMPTS = 500;
+
+  for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+    // ① 3枚または4枚を選ぶ
+    const useCount = Math.random() < 0.5 ? 3 : 4;
+
+    // ② 1〜9から引く
+    const usedCards = Array.from(
+      { length: useCount },
+      () => randomCard()
+    );
+
+    // ③ −を最低1つ含む組み合わせだけを候補にする
+    const signedResults = allSignedResults(usedCards).filter(
+      (r) => r.minusCount >= 1
+    );
+
+    // ④ 15〜30の範囲からコアを選ぶ
+    const validCoreCandidates = signedResults.filter(
+      (r) => r.value >= 15 && r.value <= 30
+    );
+
+    if (validCoreCandidates.length === 0) continue;
+
+    const core =
+      validCoreCandidates[
+        Math.floor(Math.random() * validCoreCandidates.length)
+      ].value;
+
+    // ⑤ 残りのカードをランダム補充して4枚にする
+    const hand = [...usedCards];
+    while (hand.length < 4) hand.push(randomCard());
+    shuffle(hand);
+
+    // ⑥ 完成した4枚を全探索
+    const allResults = allPossibleResults(hand);
+
+    // 1〜2枚で偶然コアに届くなら、この手札は不採用
+    if (hasAccidentalMatch(allResults, core)) continue;
+
+    // 3枚以上・−1回以上の正解が実際に存在するか最終確認
+    if (!hasValidSolution(allResults, core)) continue;
+
+    return { core, hand };
+  }
+
+  console.warn("コア生成: 規定回数内で条件を満たせなかったため再試行します");
+  return generateCoreAndHand();
+}
+mport {DIFFICULTIES,PLAYER_MAX,DEFAULT_DIFFICULTY} from "./constants.js";
 import {getMonsterPool} from "./monsters.js";
 
 const rnd=(min,max)=>Math.floor(Math.random()*(max-min+1))+min;
