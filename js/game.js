@@ -3,6 +3,15 @@ import {getMonsterPool} from "./monsters.js";
 
 const rnd=(min,max)=>Math.floor(Math.random()*(max-min+1))+min;
 
+function dealHand(){
+  const hand=Array.from({length:4},()=>rnd(1,9));
+  // 4枚のうち、必ず1枚は8か9にする
+  if(!hand.some(n=>n===8||n===9)){
+    hand[rnd(0,3)]=rnd(8,9);
+  }
+  return hand;
+}
+
 export function createGame(){
   return {difficulty:DEFAULT_DIFFICULTY,enemyHP:0,playerHP:PLAYER_MAX,core:0,hand:[],selected:[],locked:false,monster:null,resetAvailable:true,lastTotal:null,enemyCharge:0,defeated:0};
 }
@@ -20,7 +29,7 @@ export function resetGame(state){
 export function startTurn(state){
   if(state.locked)return;
   state.core=rnd(CORE_MIN,CORE_MAX);
-  state.hand=Array.from({length:4},()=>rnd(1,9));
+  state.hand=dealHand();
   state.selected=[];
   state.resetAvailable=true;
   state.lastTotal=null;
@@ -37,7 +46,7 @@ export function cycleCard(state,i){
 export function clearSelection(state){if(!state.locked)state.selected=[];}
 export function resetCards(state){
   if(state.locked||!state.resetAvailable)return false;
-  state.hand=Array.from({length:4},()=>rnd(1,9));
+  state.hand=dealHand();
   state.selected=[];
   state.resetAvailable=false;
   state.lastTotal=null;
