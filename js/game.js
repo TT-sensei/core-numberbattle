@@ -1,5 +1,5 @@
 import {DIFFICULTIES,PLAYER_MAX,CORE_MIN,CORE_MAX,DEFAULT_DIFFICULTY} from "./constants.js";
-import {NAVIAN_MONSTERS} from "./monsters.js";
+import {getMonsterPool} from "./monsters.js";
 
 const rnd=(min,max)=>Math.floor(Math.random()*(max-min+1))+min;
 
@@ -14,7 +14,7 @@ export function setDifficulty(state,key){
 function enemySettings(state){return DIFFICULTIES[state.difficulty]||DIFFICULTIES[DEFAULT_DIFFICULTY];}
 export function resetGame(state){
   state.enemyHP=enemySettings(state).enemyHP; state.playerHP=PLAYER_MAX; state.locked=false; state.enemyCharge=0; state.defeated=0;
-  state.monster=NAVIAN_MONSTERS[rnd(0,NAVIAN_MONSTERS.length-1)];
+  const pool=getMonsterPool(state.difficulty); state.monster=pool[rnd(0,pool.length-1)];
   startTurn(state);
 }
 export function startTurn(state){
