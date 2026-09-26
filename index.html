@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="./css/style.css">
 </head>
 <body>
-<div class="start-screen" id="startScreen"><div class="start-inner"><div class="start-kicker">NUMBER BATTLE</div><h1>コアバトル</h1><p>カードをくみあわせて、コアをねらえ。</p><div class="start-monster"><img src="https://tt-sensei.github.io/navi-character-/assets/web/fantasy/monsters/zako/purun-little-magic-slime.webp" alt="" draggable="false"></div><div class="start-intro"><div class="start-intro-title">HOW TO PLAY</div><div class="start-steps"><div><b>01</b><span>カードをタップして<br>＋ / − をつける</span></div><div><b>02</b><span>カードをくみあわせて<br>コアに近づける</span></div><div><b>03</b><span>アタック！<br>近いほど大ダメージ</span></div></div><div class="start-rule">コアぴったりなら <strong>CORE BREAK!</strong></div></div><div class="difficulty-select"><div class="start-label">難易度</div><div class="difficulty-buttons" id="difficultyButtons"><button type="button" data-difficulty="easy">かんたん</button><button type="button" data-difficulty="normal" class="active">ふつう</button><button type="button" data-difficulty="hard">むずかしい</button></div></div><button class="start-button" id="startButton">BATTLE START</button><div class="start-record" id="startRecord">最高記録　<span id="bestRecord">0体</span></div><div class="start-note">敵をたおして、どこまで連戦できる？</div></div></div><main class="app" id="gameScreen"><div class="battle-bg" id="battleBg" aria-hidden="true"></div>
+<div class="start-screen" id="startScreen"><div class="start-bg" id="startBg" aria-hidden="true"></div><div class="start-inner"><div class="start-kicker">NUMBER BATTLE</div><h1>コアバトル</h1><p>カードをくみあわせて、コアをねらえ。</p><div class="start-monster"><img src="https://tt-sensei.github.io/navi-character-/assets/web/fantasy/monsters/zako/purun-little-magic-slime.webp" alt="" draggable="false"></div><div class="start-intro"><div class="start-intro-title">HOW TO PLAY</div><div class="start-steps"><div><b>01</b><span>カードをタップして<br>＋ / − をつける</span></div><div><b>02</b><span>カードをくみあわせて<br>コアに近づける</span></div><div><b>03</b><span>アタック！<br>近いほど大ダメージ</span></div></div><div class="start-rule">コアぴったりなら <strong>CORE BREAK!</strong></div></div><div class="difficulty-select"><div class="start-label">難易度</div><div class="difficulty-buttons" id="difficultyButtons"><button type="button" data-difficulty="easy">かんたん</button><button type="button" data-difficulty="normal" class="active">ふつう</button><button type="button" data-difficulty="hard">むずかしい</button></div></div><button class="start-button" id="startButton">BATTLE START</button><div class="start-record" id="startRecord">最高記録　<span id="bestRecord">0体</span></div><div class="start-note">敵をたおして、どこまで連戦できる？</div></div></div><main class="app" id="gameScreen"><div class="battle-bg" id="battleBg" aria-hidden="true"></div>
   <header class="topbar">
     <div>
       <div class="title">コアバトル</div>
@@ -16,72 +16,22 @@
     </div>
     <div class="top-actions"><button class="restart" id="restart">最初から</button></div>
   </header>
-
   <section class="status" aria-label="HP">
-    <div class="hpbox enemy">
-      <div class="hphead"><span>ENEMY</span><span id="enemyHpText">30 / 30</span></div>
-      <div class="hpbar"><div class="hpfill" id="enemyHp"></div></div>
-    </div>
+    <div class="hpbox enemy"><div class="hphead"><span>ENEMY</span><span id="enemyHpText">30 / 30</span></div><div class="hpbar"><div class="hpfill" id="enemyHp"></div></div></div>
     <div class="vs">VS<br><span id="defeated">0体</span></div>
-    <div class="hpbox player">
-      <div class="hphead"><span>YOU</span><span id="playerHpText">20 / 20</span></div>
-      <div class="hpbar"><div class="hpfill" id="playerHp"></div></div>
-    </div>
+    <div class="hpbox player"><div class="hphead"><span>YOU</span><span id="playerHpText">20 / 20</span></div><div class="hpbar"><div class="hpfill" id="playerHp"></div></div></div>
   </section>
-
   <section class="core-panel">
-    <div class="core-main">
-      <div class="core-label">CORE NUMBER</div>
-      <div class="core-number" id="core">--</div>
-      <div class="expression" id="expression">カードをえらぼう</div>
-      <div class="result" id="result">カードをタップして ＋ / − を選ぶ</div>
-    </div>
-    <div class="enemy-visual" aria-label="ナビアンのモンスター">
-      <span class="enemy-tag">NAVIAN</span>
-      <div class="enemy-turn-label" id="enemyTurnLabel" aria-live="polite"></div>
-      <img id="monsterImg" alt="" draggable="false">
-      <span id="monsterName" class="monster-name"></span>
-    </div>
+    <div class="core-main"><div class="core-label">CORE NUMBER</div><div class="core-number" id="core">--</div><div class="expression" id="expression">カードをえらぼう</div><div class="result" id="result">カードをタップして ＋ / − を選ぶ</div></div>
+    <div class="enemy-visual" aria-label="ナビアンのモンスター"><span class="enemy-tag">NAVIAN</span><div class="enemy-turn-label" id="enemyTurnLabel" aria-live="polite"></div><img id="monsterImg" alt="" draggable="false"><span id="monsterName" class="monster-name"></span></div>
   </section>
-
-  <section>
-    <div class="hand-title">
-      <strong>すうじカード</strong>
-      <span>タップで ＋ → − → はずす</span>
-    </div>
-    <div class="hand" id="hand"></div>
-  </section>
-
-  <div class="actions">
-    <button class="clear" id="clear">えらび直す</button>
-    <button class="reset-cards" id="resetCards">カードをリセット</button>
-    <button class="attack" id="attack">アタック！</button>
-  </div>
-
+  <section><div class="hand-title"><strong>すうじカード</strong><span>タップで ＋ → − → はずす</span></div><div class="hand" id="hand"></div></section>
+  <div class="actions"><button class="clear" id="clear">えらび直す</button><button class="reset-cards" id="resetCards">カードをリセット</button><button class="attack" id="attack">アタック！</button></div>
   <div class="log" id="log"><strong>START</strong>　コアの数字に近づけよう。</div>
-
-  <details class="rules">
-    <summary>ルールを見る</summary>
-    <div class="rules-body">
-      コアは <b>15〜30</b>。手札は <b>1〜9の数字4枚</b>。カードをすきなまいすうえらび、＋と−をつかって0いじょうのかずをつくります。<br>
-      コアをこえるとこうげきしっぱい。コアとの差が11いじょうでもこうげきしっぱい。<br>
-      さが0なら <b>CORE BREAK</b>。差1〜2は5ダメージ、3〜4は4、5〜6は3、7〜8は2、9〜10は1。<br>
-      3枚使うと＋1、4枚使うと＋2。1〜2枚はボーナスなし。<br>
-      敵は3ターンごとに力をためて、こうげきします。こうげきしっぱいのときは、すぐに敵のこうげき。敵をたおしても、あなたのHPはそのままつづきます。
-    </div>
-  </details>
+  <details class="rules"><summary>ルールを見る</summary><div class="rules-body">コアは <b>15〜30</b>。手札は <b>1〜9の数字4枚</b>。カードをすきなまいすうえらび、＋と−をつかって0いじょうのかずをつくります。<br>コアをこえるとこうげきしっぱい。コアとの差が11いじょうでもこうげきしっぱい。<br>さが0なら <b>CORE BREAK</b>。差1〜2は5ダメージ、3〜4は4、5〜6は3、7〜8は2、9〜10は1。<br>3枚使うと＋1、4枚使うと＋2。1〜2枚はボーナスなし。<br>敵は3ターンごとに力をためて、こうげきします。こうげきしっぱいのときは、すぐに敵のこうげき。敵をたおしても、あなたのHPはそのままつづきます。</div></details>
 </main>
-
 <div class="damage-fx" id="damageFx" aria-hidden="true"><div class="damage-flash"></div><div class="damage-text" id="damageText"></div></div>
-
-<div class="overlay" id="overlay">
-  <div class="modal">
-    <div class="big" id="modalTitle">WIN</div>
-    <p id="modalText"></p>
-    <button id="modalRestart">もう一度</button>
-  </div>
-</div>
-
+<div class="overlay" id="overlay"><div class="modal"><div class="big" id="modalTitle">WIN</div><p id="modalText"></p><button id="modalRestart">もう一度</button></div></div>
 <script type="module" src="./js/app.js"></script>
 </body>
 </html>
