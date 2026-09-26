@@ -20,7 +20,8 @@ function playSfx(type){
 
 export function render(state){
   document.getElementById("core").textContent=state.core;
-  const enemyMax=(state.difficulty==="easy"?25:state.difficulty==="hard"?35:30);\n  document.getElementById("enemyHpText").textContent=state.enemyHP+" / "+enemyMax;
+  const enemyMax=(state.difficulty==="easy"?25:state.difficulty==="hard"?35:30);
+  document.getElementById("enemyHpText").textContent=state.enemyHP+" / "+enemyMax;
   const defeated=document.getElementById("defeated");
   if(defeated) defeated.textContent=state.defeated+"体";
   document.getElementById("playerHpText").textContent=state.playerHP+" / 20";
