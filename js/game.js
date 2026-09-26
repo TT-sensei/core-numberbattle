@@ -69,12 +69,14 @@ export function attack(state){
   const total=currentCalc(state),used=state.selected.length;
   state.lastTotal=total;
   if(total<0){
-    state.playerHP=Math.max(0,state.playerHP-3);
-    return {type:"fail",message:"こたえが0みまんになった。",result:"こうげきしっぱい",total,enemyAttack:true,enemyDamage:3};
+    const enemyDamage=enemySettings(state).enemyDamage;
+    state.playerHP=Math.max(0,state.playerHP-enemyDamage);
+    return {type:"fail",message:"こたえが0みまんになった。",result:"こうげきしっぱい",total,enemyAttack:true,enemyDamage};
   }
   if(total>state.core){
-    state.playerHP=Math.max(0,state.playerHP-3);
-    return {type:"fail",message:"コアを "+(total-state.core)+" こえた！",result:"こうげきしっぱい",total,enemyAttack:true,enemyDamage:3};
+    const enemyDamage=enemySettings(state).enemyDamage;
+    state.playerHP=Math.max(0,state.playerHP-enemyDamage);
+    return {type:"fail",message:"コアを "+(total-state.core)+" こえた！",result:"こうげきしっぱい",total,enemyAttack:true,enemyDamage};
   }
   const diff=state.core-total;
   if(diff===0){
@@ -82,8 +84,9 @@ export function attack(state){
     return {type:"break",message:"コアにぴったり！",result:"30ダメージ",total};
   }
   if(diff>10){
-    state.playerHP=Math.max(0,state.playerHP-3);
-    return {type:"fail",message:"コアからとおすぎた。",result:"こうげきしっぱい",total,enemyAttack:true,enemyDamage:3};
+    const enemyDamage=enemySettings(state).enemyDamage;
+    state.playerHP=Math.max(0,state.playerHP-enemyDamage);
+    return {type:"fail",message:"コアからとおすぎた。",result:"こうげきしっぱい",total,enemyAttack:true,enemyDamage};
   }
   const dmg=baseDamage(diff)+bonus(used);
   state.enemyHP=Math.max(0,state.enemyHP-dmg);
