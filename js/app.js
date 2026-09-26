@@ -1,5 +1,5 @@
 import {createGame,resetGame,startTurn,cycleCard,clearSelection,attack,isWin,isLose} from "./game.js";
-import {render,setResult,setLog,showEnd,hideEnd} from "./ui.js";
+import {render,setResult,setLog,showEnd,hideEnd,showDamage} from "./ui.js";
 
 const state=createGame();
 function newGame(){
@@ -14,8 +14,8 @@ document.getElementById("clear").addEventListener("click",()=>{clearSelection(st
 document.getElementById("attack").addEventListener("click",()=>{
   const outcome=attack(state);
   if(outcome.type==="none")return;
-  if(outcome.type==="break")setLog("<strong>CORE BREAK!</strong>　"+outcome.message);
-  else if(outcome.type==="hit")setLog("<strong>"+outcome.damage+"ダメージ！</strong>　"+outcome.message);
+  if(outcome.type==="break"){showDamage("break");setLog("<strong>CORE BREAK!</strong>　"+outcome.message);}
+  else if(outcome.type==="hit"){showDamage("hit",outcome.damage);setLog("<strong>"+outcome.damage+"ダメージ！</strong>　"+outcome.message);}
   else setLog("<strong>攻撃失敗</strong>　"+outcome.message);
   setResult(state,outcome.result);
   render(state);
