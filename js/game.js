@@ -60,7 +60,7 @@ export function nextEnemy(state){
   state.enemyHP=enemySettings(state).enemyHP;
   state.defeated++;
   state.enemyCharge=0;
-  state.monster=NAVIAN_MONSTERS[rnd(0,NAVIAN_MONSTERS.length-1)];
+  const pool=getMonsterPool(state.difficulty); state.monster=pool[rnd(0,pool.length-1)];
   startTurn(state);
 }
 
