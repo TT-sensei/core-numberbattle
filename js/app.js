@@ -19,7 +19,7 @@ document.getElementById("attack").addEventListener("click",()=>{
   else setLog("<strong>こうげきしっぱい</strong>　"+outcome.message);
   setResult(state,outcome.result);
   render(state);
-  if(isWin(state)){showEnd(true);return;}
+  if(isWin(state)){setTimeout(()=>showEnd(true),1500);return;}
   if(isLose(state)){showEnd(false);return;}
   state.locked=true; render(state);
   setTimeout(()=>{state.locked=false;startTurn(state);render(state);},650);
