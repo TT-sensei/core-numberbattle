@@ -71,7 +71,7 @@ document.getElementById("attack").addEventListener("click",()=>{
   }
   if(enemyTurn){
     setTimeout(()=>{
-      showEnemyAttack();
+      showEnemyAttack(outcome.enemyDamage);
       setLog("<strong>こうげき！</strong>　敵のこうげきで "+outcome.enemyDamage+"ダメージ。");
       render(state);
       if(isLose(state)){setTimeout(()=>showEnd(false),500);return;}
