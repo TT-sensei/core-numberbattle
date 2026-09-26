@@ -21,6 +21,8 @@ function playSfx(type){
 export function render(state){
   document.getElementById("core").textContent=state.core;
   document.getElementById("enemyHpText").textContent=state.enemyHP+" / 30";
+  const defeated=document.getElementById("defeated");
+  if(defeated) defeated.textContent=state.defeated+"体";
   document.getElementById("playerHpText").textContent=state.playerHP+" / 20";
   document.getElementById("enemyHp").style.width=Math.max(0,state.enemyHP/30*100)+"%";
   document.getElementById("playerHp").style.width=Math.max(0,state.playerHP/20*100)+"%";
