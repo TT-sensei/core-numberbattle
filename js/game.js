@@ -45,20 +45,20 @@ export function attack(state){
   const total=currentCalc(state),used=state.selected.length;
   if(total<0){
     state.playerHP=Math.max(0,state.playerHP-3);
-    return {type:"fail",message:"答えが0未満になった。",result:"0未満にはできません"};
+    return {type:"fail",message:"こたえが0みまんになった。",result:"0未満にはできません"};
   }
   if(total>state.core){
     state.playerHP=Math.max(0,state.playerHP-3);
-    return {type:"fail",message:"コアを "+(total-state.core)+" 超えた！",result:"攻撃失敗"};
+    return {type:"fail",message:"コアを "+(total-state.core)+" こえた！",result:"攻撃失敗"};
   }
   const diff=state.core-total;
   if(diff===0){
     state.enemyHP=0;
-    return {type:"break",message:"コアを完全にとらえた！",result:"30ダメージ"};
+    return {type:"break",message:"コアにぴったり！",result:"30ダメージ"};
   }
   if(diff>10){
     state.playerHP=Math.max(0,state.playerHP-3);
-    return {type:"fail",message:"コアから遠すぎた。",result:"ダメージ 0"};
+    return {type:"fail",message:"コアからとおすぎた。",result:"ダメージ 0"};
   }
   const dmg=baseDamage(diff)+bonus(used);
   state.enemyHP=Math.max(0,state.enemyHP-dmg);
