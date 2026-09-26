@@ -26,10 +26,9 @@ document.getElementById("attack").addEventListener("click",()=>{
   const enemyDefeated=isWin(state);
   if(enemyDefeated){
     setTimeout(()=>{
+      state.locked=false;
       nextEnemy(state);
       setLog("<strong>つぎのナビアン！</strong>　"+state.monster[0]+" があらわれた。");
-      render(state);
-      state.locked=false;
       render(state);
     },1500);
     return;
