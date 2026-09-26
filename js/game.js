@@ -96,7 +96,7 @@ export function attack(state){
     state.enemyCharge=0;
     state.playerHP=Math.max(0,state.playerHP-enemySettings(state).enemyDamage);
   }
-  return {type:"hit",damage:dmg,diff,used,message:"コアとの差は "+diff+"。",result:"ダメージ "+dmg+"（"+used+"枚）",total,enemyAttack,enemyDamage:enemyAttack?enemySettings(state).enemyDamage:0};
+  return {type:"hit",damage:dmg,diff,used,message:"コアとの差は "+diff+"。",result:"ダメージ "+dmg+"（"+used+"枚）",total,enemyAttack,enemyDamage:enemyAttack?enemySettings(state).enemyDamage:0,enemyCharge:state.enemyCharge,enemyAttackEvery:enemySettings(state).enemyAttackEvery};
 }
 export function isWin(state){return state.enemyHP<=0;}
 export function isLose(state){return state.playerHP<=0;}
