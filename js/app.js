@@ -1,4 +1,4 @@
-import {createGame,resetGame,startTurn,cycleCard,clearSelection,attack,isWin,isLose} from "./game.js";
+import {createGame,resetGame,startTurn,cycleCard,clearSelection,resetCards,attack,isWin,isLose} from "./game.js";
 import {render,setResult,setLog,showEnd,hideEnd,showDamage} from "./ui.js";
 
 const state=createGame();
@@ -11,13 +11,14 @@ document.getElementById("hand").addEventListener("click",e=>{
   cycleCard(state,Number(card.dataset.index)); render(state);
 });
 document.getElementById("clear").addEventListener("click",()=>{clearSelection(state);render(state);});
+document.getElementById("resetCards").addEventListener("click",()=>{if(resetCards(state)){setResult(state,"新しいカードになった！");setLog("カードをリセットした。もう一度コアをねらおう。");render(state);}});
 document.getElementById("attack").addEventListener("click",()=>{
   const outcome=attack(state);
   if(outcome.type==="none")return;
   if(outcome.type==="break"){showDamage("break");setLog("<strong>CORE BREAK!</strong>　"+outcome.message);}
   else if(outcome.type==="hit"){showDamage("hit",outcome.damage);setLog("<strong>"+outcome.damage+"ダメージ！</strong>　"+outcome.message);}
   else setLog("<strong>こうげきしっぱい</strong>　"+outcome.message);
-  setResult(state,outcome.result);
+  setResult(state,"けいさんのこたえは "+outcome.total+"。 "+outcome.result);
   render(state);
   if(isWin(state)){setTimeout(()=>showEnd(true),1500);return;}
   if(isLose(state)){showEnd(false);return;}
