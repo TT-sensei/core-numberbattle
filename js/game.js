@@ -3,75 +3,36 @@ import {getMonsterPool} from "./monsters.js";
 
 const rnd=(min,max)=>Math.floor(Math.random()*(max-min+1))+min;
 
-// ===== コアバトル: 逆算方式によるコア&手札生成 =====
-// 生成した手札から、実際のゲームルールで成立するコアを逆算する。
-// ・使用枚数は3枚または4枚
-// ・＋/−の組み合わせには−を最低1つ含める
-// ・コアは15〜30
-// ・完成した4枚の手札で、1〜2枚だけでもコアに届いてしまう場合は作り直す
+// ===== コアバトル: パターン先決め方式によるコア&手札生成 =====
+// ① 今回の符号パターンを先に抽選（プレイヤーには見せない）
+// ② そのパターンで15〜30に収まるカードを生成
+// ③ 4枚未満ならランダム補充
+// ④ 完成した4枚を全探索し、1〜2枚で偶然Coreに一致したら作り直す
+//
+// pattern は生成専用。UIには返さない。
+
+const CORE_PATTERNS = [
+  { name:"3枚 ++-", cardCount:3, signs:[1,1,-1], weight:25 },
+  { name:"3枚 +-+", cardCount:3, signs:[1,-1,1], weight:20 },
+  { name:"4枚 +++-", cardCount:4, signs:[1,1,1,-1], weight:20 },
+  { name:"4枚 ++--", cardCount:4, signs:[1,1,-1,-1], weight:15 },
+  { name:"4枚 +-+-", cardCount:4, signs:[1,-1,1,-1], weight:10 },
+  { name:"4枚 +--+", cardCount:4, signs:[1,-1,-1,1], weight:5 },
+  { name:"全部たす", cardCount:4, signs:[1,1,1,1], weight:5 }
+];
+
+function pickWeightedPattern(){
+  const total=CORE_PATTERNS.reduce((sum,p)=>sum+p.weight,0);
+  let r=Math.random()*total;
+  for(const pattern of CORE_PATTERNS){
+    if(r<pattern.weight)return pattern;
+    r-=pattern.weight;
+  }
+  return CORE_PATTERNS[CORE_PATTERNS.length-1];
+}
 
 function randomCard(){
   return Math.floor(Math.random()*9)+1;
-}
-
-// 最初のカードは＋、2枚目以降は＋/−。
-// 実際のゲームのカード選択ルールに合わせる。
-function allSignedResults(cards){
-  const n=cards.length;
-  const results=[];
-  if(n===0)return results;
-
-  const totalPatterns=1<<(n-1);
-  for(let pattern=0;pattern<totalPatterns;pattern++){
-    let value=cards[0];
-    let minusCount=0;
-
-    for(let i=1;i<n;i++){
-      const isMinus=(pattern>>(i-1))&1;
-      if(isMinus){
-        value-=cards[i];
-        minusCount++;
-      }else{
-        value+=cards[i];
-      }
-    }
-
-    if(value>=0)results.push({value,minusCount});
-  }
-  return results;
-}
-
-// 4枚の手札から1〜4枚の全組み合わせを探索。
-// 固定したカード順では合計40パターン。
-function allPossibleResults(cards){
-  const n=cards.length;
-  const results=[];
-
-  for(let subsetMask=1;subsetMask<(1<<n);subsetMask++){
-    const subset=[];
-    for(let i=0;i<n;i++){
-      if((subsetMask>>i)&1)subset.push(cards[i]);
-    }
-
-    for(const r of allSignedResults(subset)){
-      results.push({
-        value:r.value,
-        cardCount:subset.length,
-        minusCount:r.minusCount
-      });
-    }
-  }
-  return results;
-}
-
-function hasAccidentalMatch(results,core){
-  return results.some(r=>r.cardCount<=2&&r.value===core);
-}
-
-function hasValidSolution(results,core){
-  return results.some(
-    r=>r.value===core&&r.cardCount>=3&&r.minusCount>=1
-  );
 }
 
 function shuffle(array){
@@ -81,47 +42,77 @@ function shuffle(array){
   }
 }
 
-export function generateCoreAndHand(){
-  const MAX_ATTEMPTS=500;
+// 完成した4枚について、1〜4枚の全組み合わせ×全符号を列挙。
+// 「1〜2枚でCoreを作れてしまうか」の判定に使う。
+function allPossibleResults(hand){
+  const n=hand.length;
+  const results=[];
 
-  for(let attempt=0;attempt<MAX_ATTEMPTS;attempt++){
-    // ① 使用枚数を3枚または4枚からランダムに決定
-    const useCount=Math.random()<0.5?3:4;
+  for(let subsetMask=1;subsetMask<(1<<n);subsetMask++){
+    const subset=[];
+    for(let i=0;i<n;i++){
+      if((subsetMask>>i)&1)subset.push(hand[i]);
+    }
 
-    // ② 1〜9からカードを引く
-    const usedCards=Array.from(
-      {length:useCount},
-      ()=>randomCard()
-    );
+    const m=subset.length;
+    for(let signPattern=0;signPattern<(1<<m);signPattern++){
+      let value=0;
+      for(let i=0;i<m;i++){
+        value+=((signPattern>>i)&1)?-subset[i]:subset[i];
+      }
+      if(value>=0){
+        results.push({value,cardCount:m});
+      }
+    }
+  }
 
-    // ③ −を最低1つ含む組み合わせだけを候補にする
-    const signedResults=allSignedResults(usedCards).filter(
-      r=>r.minusCount>=1
-    );
+  return results;
+}
 
-    // ④ 15〜30の範囲に入るものからコアを決定
-    const validCoreCandidates=signedResults.filter(
-      r=>r.value>=15&&r.value<=30
-    );
-    if(validCoreCandidates.length===0)continue;
+function hasAccidentalMatch(results,core){
+  return results.some(r=>r.cardCount<=2&&r.value===core);
+}
 
-    const core=validCoreCandidates[
-      Math.floor(Math.random()*validCoreCandidates.length)
-    ].value;
+function generateCoreAndHand(){
+  const MAX_OUTER_ATTEMPTS=200;
+  const MAX_CARD_ATTEMPTS=50;
 
-    // ⑤ 残りをランダム補充して4枚にする
+  for(let outer=0;outer<MAX_OUTER_ATTEMPTS;outer++){
+    // ① まず「今回の解き方」を決める
+    const pattern=pickWeightedPattern();
+
+    // ② そのパターンでCore 15〜30になるカードを生成
+    let usedCards=null;
+    let core=null;
+
+    for(let inner=0;inner<MAX_CARD_ATTEMPTS;inner++){
+      const cards=Array.from(
+        {length:pattern.cardCount},
+        ()=>randomCard()
+      );
+
+      let value=0;
+      for(let i=0;i<pattern.cardCount;i++){
+        value+=cards[i]*pattern.signs[i];
+      }
+
+      if(value>=15&&value<=30){
+        usedCards=cards;
+        core=value;
+        break;
+      }
+    }
+
+    if(usedCards===null)continue;
+
+    // ③ 3枚パターンなら4枚目をランダム補充
     const hand=[...usedCards];
     while(hand.length<4)hand.push(randomCard());
     shuffle(hand);
 
-    // ⑥ 完成した4枚を全探索
+    // ④ 1〜2枚だけでCoreに偶然一致する手札は不採用
     const allResults=allPossibleResults(hand);
-
-    // 1〜2枚で偶然コアに一致するなら、手札ごと作り直す
     if(hasAccidentalMatch(allResults,core))continue;
-
-    // 3枚以上・−1回以上の正解が残っていることを最終確認
-    if(!hasValidSolution(allResults,core))continue;
 
     return {core,hand};
   }
@@ -129,7 +120,6 @@ export function generateCoreAndHand(){
   console.warn("コア生成: 規定回数内で条件を満たせなかったため再試行します");
   return generateCoreAndHand();
 }
-
 export function createGame(){
   return {
     difficulty:DEFAULT_DIFFICULTY,
