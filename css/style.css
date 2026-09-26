@@ -53,13 +53,13 @@ body{padding:10px}
 @media(min-width:800px) and (orientation:landscape){body{padding:12px 18px}.app{display:grid;grid-template-columns:minmax(0,1fr) 250px;column-gap:12px;align-items:start}.topbar{grid-column:1/-1}.status{grid-column:1/-1}.core-panel{grid-column:1}.hand-title,.hand,.actions,.log,.rules{grid-column:2}.hand-title{margin-top:0}.hand{grid-template-columns:repeat(2,1fr)}.card{min-height:96px}.actions{margin-top:8px}.log{margin-top:8px}.rules{margin-top:2px}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}.card:active{transform:none}.card.selected-plus,.card.selected-minus{transform:none}}
 .damage-fx{position:fixed;inset:0;pointer-events:none;z-index:20;display:grid;place-items:center;opacity:0}
-.damage-fx.show{animation:damageFx .55s ease-out forwards}
+.damage-fx.show{animation:damageFx 1.35s ease-out forwards}
 .damage-flash{position:absolute;inset:0;background:rgba(255,255,255,.72);opacity:0}
 .damage-text{position:relative;font-size:clamp(44px,11vw,96px);font-weight:1000;letter-spacing:.03em;color:#fff;text-shadow:0 4px 0 rgba(0,0,0,.35),0 0 28px rgba(255,255,255,.65);transform:scale(.55) rotate(-5deg)}
 .damage-fx.normal .damage-text{color:#ffecb5}
-.damage-fx.core{animation:coreFx .9s cubic-bezier(.15,.85,.25,1) forwards}
-.damage-fx.core .damage-flash{animation:coreFlash .9s ease-out forwards}
-.damage-fx.core .damage-text{font-size:clamp(52px,14vw,128px);color:#fff;animation:coreText .9s cubic-bezier(.12,.8,.2,1) forwards;text-shadow:0 5px 0 rgba(90,0,0,.45),0 0 45px rgba(255,80,40,.95)}
+.damage-fx.core{animation:coreFx 1.4s cubic-bezier(.15,.85,.25,1) forwards}
+.damage-fx.core .damage-flash{animation:coreFlash 1.4s ease-out forwards}
+.damage-fx.core .damage-text{font-size:clamp(52px,14vw,128px);color:#fff;animation:coreText 1.4s cubic-bezier(.12,.8,.2,1) forwards;text-shadow:0 5px 0 rgba(90,0,0,.45),0 0 45px rgba(255,80,40,.95)}
 @keyframes damageFx{0%{opacity:1}100%{opacity:0}}
 @keyframes coreFx{0%{opacity:1}100%{opacity:0}}
 @keyframes coreFlash{0%{opacity:1}12%{opacity:.2}24%{opacity:.9}42%{opacity:0}}
