@@ -212,10 +212,11 @@ function cycleCard(i){
     // その後のカードだけ「＋ / −」を選べる。
     selected.push({i,sign:1});
   }else if(found.sign === 1){
-    if(selected[0].i === i){
+    // 最初に選んだカードは「＋」のまま固定。
+    if(selected[0].i !== i){
       found.sign = -1;
     }else{
-      found.sign = -1;
+      selected = selected.filter(x => x.i !== i);
     }
   }else{
     selected = selected.filter(x => x.i !== i);
