@@ -52,6 +52,7 @@ function bonus(n){if(n>=4)return 2;if(n>=3)return 1;return 0;}
 
 export function nextEnemy(state){
   state.enemyHP=ENEMY_MAX;
+  state.defeated++;
   state.enemyCharge=0;
   state.monster=NAVIAN_MONSTERS[rnd(0,NAVIAN_MONSTERS.length-1)];
   startTurn(state);
