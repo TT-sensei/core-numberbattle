@@ -6,9 +6,15 @@ const startScreen=document.getElementById("startScreen");
 const gameScreen=document.getElementById("gameScreen");
 const difficultyButtons=[...document.querySelectorAll("#difficultyButtons button")];
 const startButton=document.getElementById("startButton");
+const bestRecord=document.getElementById("bestRecord");
+const RECORD_KEY="core-numberbattle-best";
+function getBest(key){try{return Number(JSON.parse(localStorage.getItem(RECORD_KEY)||"{}")[key]||0)}catch(e){return 0}}
+function updateStartRecord(){if(bestRecord)bestRecord.textContent=getBest(document.querySelector("#difficultyButtons button.active")?.dataset.difficulty||"normal")+"体";}
+function saveBest(){const key=state.difficulty;if(state.defeated<=getBest(key))return;try{const data=JSON.parse(localStorage.getItem(RECORD_KEY)||"{}");data[key]=state.defeated;localStorage.setItem(RECORD_KEY,JSON.stringify(data));}catch(e){} updateStartRecord();}
 function showStart(){
   hideEnd();
   startScreen.classList.add("show");
+  updateStartRecord();
   gameScreen.classList.remove("show");
 }
 function setBattleBackground(){
@@ -30,6 +36,7 @@ function startBattle(){
 difficultyButtons.forEach(button=>button.addEventListener("click",()=>{
   difficultyButtons.forEach(b=>b.classList.remove("active"));
   button.classList.add("active");
+  updateStartRecord();
 }));
 if(startButton)startButton.addEventListener("click",startBattle);
 function newGame(){ showStart(); }
@@ -55,6 +62,7 @@ document.getElementById("attack").addEventListener("click",()=>{
     setTimeout(()=>{
       state.locked=false;
       nextEnemy(state);
+      saveBest();
       setBattleBackground();
       setLog("<strong>つぎのナビアン！</strong>　"+state.monster[0]+" があらわれた。");
       render(state);
