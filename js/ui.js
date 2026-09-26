@@ -77,12 +77,20 @@ export function showEnemyHit(){
   void img.offsetWidth;
   img.classList.add("enemy-hit");
 }
+export function showEnemyCharge(current=1,max=3){
+  const img=document.getElementById("monsterImg");
+  const label=document.getElementById("enemyTurnLabel");
+  if(img){img.classList.remove("enemy-charge");void img.offsetWidth;img.classList.add("enemy-charge");}
+  if(label){label.textContent="ちからをためている…  "+current+" / "+max;label.className="enemy-turn-label charging";}
+}
 export function showEnemyAttack(damage=3){
   const img=document.getElementById("monsterImg");
   if(!img)return;
   img.classList.remove("enemy-attack");
   void img.offsetWidth;
   img.classList.add("enemy-attack");
+  const label=document.getElementById("enemyTurnLabel");
+  if(label){label.textContent="こうげき！";label.className="enemy-turn-label attacking";}
   showDamage("enemy",damage);
   const hp=document.querySelector(".player");
   if(hp){hp.classList.remove("player-damaged");void hp.offsetWidth;hp.classList.add("player-damaged");}
