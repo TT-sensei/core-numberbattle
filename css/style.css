@@ -18,6 +18,7 @@ body{padding:10px}
 .hpbar{height:7px;border-radius:99px;background:#e7ebf1;overflow:hidden}
 .hpfill{height:100%;width:100%;transition:width .25s ease}
 .enemy .hpfill{background:var(--red)}.player .hpfill{background:var(--blue)}
+.player-damaged{animation:playerDamaged .45s ease}.enemy-hit{animation:enemyHit .65s cubic-bezier(.2,.8,.25,1)}.enemy-attack{animation:enemyAttack .65s cubic-bezier(.2,.8,.25,1)}
 .vs{font-size:11px;font-weight:900;color:var(--muted)}
 .core-panel{display:grid;grid-template-columns:minmax(0,1fr) 150px;align-items:center;gap:10px;background:var(--navy);color:#fff;border-radius:18px;padding:14px 16px;margin-bottom:9px;box-shadow:var(--shadow);min-height:175px}
 .core-main{text-align:center;min-width:0}
@@ -57,10 +58,13 @@ body{padding:10px}
 .damage-fx.show{animation:damageFx 1.35s ease-out forwards}
 .damage-flash{position:absolute;inset:0;background:rgba(255,255,255,.72);opacity:0}
 .damage-text{position:relative;font-size:clamp(44px,11vw,96px);font-weight:1000;letter-spacing:.03em;color:#fff;text-shadow:0 4px 0 rgba(0,0,0,.35),0 0 28px rgba(255,255,255,.65);transform:scale(.55) rotate(-5deg)}
-.damage-fx.normal .damage-text{color:#ffecb5}
+.damage-fx.normal .damage-text{color:#ffecb5}.damage-fx.enemy .damage-text{color:#ffb0b0}
 .damage-fx.core{animation:coreFx 1.4s cubic-bezier(.15,.85,.25,1) forwards}
 .damage-fx.core .damage-flash{animation:coreFlash 1.4s ease-out forwards}
 .damage-fx.core .damage-text{font-size:clamp(52px,14vw,128px);color:#fff;animation:coreText 1.4s cubic-bezier(.12,.8,.2,1) forwards;text-shadow:0 5px 0 rgba(90,0,0,.45),0 0 45px rgba(255,80,40,.95)}
+@keyframes playerDamaged{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(5px)}}
+@keyframes enemyHit{0%{transform:translate(0,0) rotate(0) scale(1)}35%{transform:translate(-8px,2px) rotate(-5deg) scale(.98)}100%{transform:translate(90px,-12px) rotate(18deg) scale(.88);opacity:.15}}
+@keyframes enemyAttack{0%{transform:translate(0,0) scale(1)}35%{transform:translate(-18px,0) scale(1.05)}70%{transform:translate(18px,0) scale(1.08)}100%{transform:translate(0,0) scale(1)}}
 @keyframes damageFx{0%{opacity:1}100%{opacity:0}}
 @keyframes coreFx{0%{opacity:1}100%{opacity:0}}
 @keyframes coreFlash{0%{opacity:1}12%{opacity:.2}24%{opacity:.9}42%{opacity:0}}
