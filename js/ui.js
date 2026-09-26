@@ -34,6 +34,15 @@ export function updateExpression(state){
   expression.textContent=expr+" ＝";
   result.textContent=total<0?"0未満にはできません":"コアまであと "+Math.abs(state.core-total);
 }
+export function showDamage(type,damage=0){
+  const fx=document.getElementById("damageFx"),text=document.getElementById("damageText");
+  if(!fx||!text)return;
+  fx.className="damage-fx "+(type==="break"?"core":"normal");
+  text.textContent=type==="break"?"CORE BREAK!":"−"+damage;
+  void fx.offsetWidth;
+  fx.classList.add("show");
+  setTimeout(()=>{fx.className="damage-fx";},950);
+}
 export function setResult(state,message){
   document.getElementById("result").textContent=message;
 }
