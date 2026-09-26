@@ -20,11 +20,11 @@ function playSfx(type){
 
 export function render(state){
   document.getElementById("core").textContent=state.core;
-  document.getElementById("enemyHpText").textContent=state.enemyHP+" / 30";
+  const enemyMax=(state.difficulty==="easy"?25:state.difficulty==="hard"?35:30);\n  document.getElementById("enemyHpText").textContent=state.enemyHP+" / "+enemyMax;
   const defeated=document.getElementById("defeated");
   if(defeated) defeated.textContent=state.defeated+"体";
   document.getElementById("playerHpText").textContent=state.playerHP+" / 20";
-  document.getElementById("enemyHp").style.width=Math.max(0,state.enemyHP/30*100)+"%";
+  document.getElementById("enemyHp").style.width=Math.max(0,state.enemyHP/enemyMax*100)+"%";
   document.getElementById("playerHp").style.width=Math.max(0,state.playerHP/20*100)+"%";
   if(state.monster){
     const img=document.getElementById("monsterImg");
