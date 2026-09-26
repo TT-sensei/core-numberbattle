@@ -2,20 +2,30 @@ import {createGame,resetGame,startTurn,cycleCard,clearSelection,resetCards,attac
 import {render,setResult,setLog,showEnd,hideEnd,showDamage,showEnemyHit,showEnemyAttack} from "./ui.js";
 
 const state=createGame();
-const difficulty=document.getElementById("difficulty");
-if(difficulty) difficulty.value=state.difficulty;
-function applyDifficulty(){
-  if(!difficulty)return;
-  setDifficulty(state,difficulty.value);
+const startScreen=document.getElementById("startScreen");
+const gameScreen=document.getElementById("gameScreen");
+const difficultyButtons=[...document.querySelectorAll("#difficultyButtons button")];
+const startButton=document.getElementById("startButton");
+function showStart(){
+  hideEnd();
+  startScreen.classList.add("show");
+  gameScreen.classList.remove("show");
+}
+function startBattle(){
+  const active=difficultyButtons.find(b=>b.classList.contains("active"));
+  setDifficulty(state,active?.dataset.difficulty||"normal");
   resetGame(state);
-  setLog("<strong>"+difficulty.options[difficulty.selectedIndex].text+"</strong>　バトルスタート。");
+  startScreen.classList.remove("show");
+  gameScreen.classList.add("show");
+  setLog("<strong>START</strong>　"+active.textContent+"でバトルスタート。");
   render(state);
 }
-if(difficulty) difficulty.addEventListener("change",applyDifficulty);
-function newGame(){
-  hideEnd(); setLog("<strong>START</strong>　コアの数字に近づけよう。");
-  resetGame(state); render(state);
-}
+difficultyButtons.forEach(button=>button.addEventListener("click",()=>{
+  difficultyButtons.forEach(b=>b.classList.remove("active"));
+  button.classList.add("active");
+}));
+if(startButton)startButton.addEventListener("click",startBattle);
+function newGame(){ showStart(); }
 document.getElementById("hand").addEventListener("click",e=>{
   const card=e.target.closest(".card"); if(!card)return;
   cycleCard(state,Number(card.dataset.index)); render(state);
@@ -57,4 +67,4 @@ document.getElementById("attack").addEventListener("click",()=>{
 });
 document.getElementById("restart").addEventListener("click",newGame);
 document.getElementById("modalRestart").addEventListener("click",newGame);
-newGame();
+showStart();
