@@ -16,7 +16,7 @@ document.getElementById("attack").addEventListener("click",()=>{
   if(outcome.type==="none")return;
   if(outcome.type==="break"){showDamage("break");setLog("<strong>CORE BREAK!</strong>　"+outcome.message);}
   else if(outcome.type==="hit"){showDamage("hit",outcome.damage);setLog("<strong>"+outcome.damage+"ダメージ！</strong>　"+outcome.message);}
-  else setLog("<strong>攻撃失敗</strong>　"+outcome.message);
+  else setLog("<strong>こうげきしっぱい</strong>　"+outcome.message);
   setResult(state,outcome.result);
   render(state);
   if(isWin(state)){showEnd(true);return;}
