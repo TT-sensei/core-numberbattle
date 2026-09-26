@@ -56,24 +56,24 @@ export function attack(state){
   state.lastTotal=total;
   if(total<0){
     state.playerHP=Math.max(0,state.playerHP-3);
-    return {type:"fail",message:"こたえが0みまんになった。",result:"0未満にはできません"};
+    return {type:"fail",message:"こたえが0みまんになった。",result:"0みまんにはできません",total};
   }
   if(total>state.core){
     state.playerHP=Math.max(0,state.playerHP-3);
-    return {type:"fail",message:"コアを "+(total-state.core)+" こえた！",result:"攻撃失敗"};
+    return {type:"fail",message:"コアを "+(total-state.core)+" こえた！",result:"こうげきしっぱい",total};
   }
   const diff=state.core-total;
   if(diff===0){
     state.enemyHP=0;
-    return {type:"break",message:"コアにぴったり！",result:"30ダメージ"};
+    return {type:"break",message:"コアにぴったり！",result:"30ダメージ",total};
   }
   if(diff>10){
     state.playerHP=Math.max(0,state.playerHP-3);
-    return {type:"fail",message:"コアからとおすぎた。",result:"ダメージ 0"};
+    return {type:"fail",message:"コアからとおすぎた。",result:"ダメージ 0",total};
   }
   const dmg=baseDamage(diff)+bonus(used);
   state.enemyHP=Math.max(0,state.enemyHP-dmg);
-  return {type:"hit",damage:dmg,diff,used,message:"コアとの差は "+diff+"。",result:"ダメージ "+dmg+"（"+used+"枚）"};
+  return {type:"hit",damage:dmg,diff,used,message:"コアとの差は "+diff+"。",result:"ダメージ "+dmg+"（"+used+"枚）",total};
 }
 export function isWin(state){return state.enemyHP<=0;}
 export function isLose(state){return state.playerHP<=0;}
