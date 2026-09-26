@@ -31,6 +31,9 @@ export function render(state){
     const img=document.getElementById("monsterImg");
     img.src=state.monster[1]; img.alt=state.monster[0];
     document.getElementById("monsterName").textContent=state.monster[0];
+    const tags={easy:"NAVIAN",normal:"EVO NAVI",hard:"BOSS NAVI"};
+    const tag=document.querySelector(".enemy-tag");
+    if(tag)tag.textContent=tags[state.difficulty]||"NAVIAN";
   }
   const hand=document.getElementById("hand"); hand.innerHTML="";
   state.hand.forEach((value,i)=>{
@@ -74,13 +77,13 @@ export function showEnemyHit(){
   void img.offsetWidth;
   img.classList.add("enemy-hit");
 }
-export function showEnemyAttack(){
+export function showEnemyAttack(damage=3){
   const img=document.getElementById("monsterImg");
   if(!img)return;
   img.classList.remove("enemy-attack");
   void img.offsetWidth;
   img.classList.add("enemy-attack");
-  showDamage("enemy",3);
+  showDamage("enemy",damage);
   const hp=document.querySelector(".player");
   if(hp){hp.classList.remove("player-damaged");void hp.offsetWidth;hp.classList.add("player-damaged");}
 }
