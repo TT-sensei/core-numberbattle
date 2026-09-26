@@ -40,6 +40,8 @@ export function render(state){
   });
   updateExpression(state);
   document.getElementById("attack").disabled=state.selected.length===0||state.locked;
+  const reset=document.getElementById("resetCards");
+  if(reset){reset.disabled=!state.resetAvailable||state.locked;reset.textContent=state.resetAvailable?"カードをリセット":"カードリセット済み";}
 }
 export function updateExpression(state){
   const expression=document.getElementById("expression"),result=document.getElementById("result");
@@ -49,8 +51,8 @@ export function updateExpression(state){
     return (s.sign===1?"＋":"−")+n;
   }).join("");
   const total=currentCalc(state);
-  expression.textContent=expr+" ＝";
-  result.textContent=total<0?"":"";
+  expression.textContent=expr+" ＝"+(state.lastTotal!==null?total:"");
+  result.textContent=state.lastTotal!==null?result.textContent:"";
 }
 export function showDamage(type,damage=0){
   const fx=document.getElementById("damageFx"),text=document.getElementById("damageText");
