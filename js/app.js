@@ -1,7 +1,17 @@
-import {createGame,resetGame,startTurn,cycleCard,clearSelection,resetCards,attack,isWin,isLose,nextEnemy} from "./game.js";
+import {createGame,resetGame,startTurn,cycleCard,clearSelection,resetCards,attack,isWin,isLose,nextEnemy,setDifficulty} from "./game.js";
 import {render,setResult,setLog,showEnd,hideEnd,showDamage,showEnemyHit,showEnemyAttack} from "./ui.js";
 
 const state=createGame();
+const difficulty=document.getElementById("difficulty");
+if(difficulty) difficulty.value=state.difficulty;
+function applyDifficulty(){
+  if(!difficulty)return;
+  setDifficulty(state,difficulty.value);
+  resetGame(state);
+  setLog("<strong>"+difficulty.options[difficulty.selectedIndex].text+"</strong>　バトルスタート。");
+  render(state);
+}
+if(difficulty) difficulty.addEventListener("change",applyDifficulty);
 function newGame(){
   hideEnd(); setLog("<strong>START</strong>　コアの数字に近づけよう。");
   resetGame(state); render(state);
@@ -36,7 +46,7 @@ document.getElementById("attack").addEventListener("click",()=>{
   if(enemyTurn){
     setTimeout(()=>{
       showEnemyAttack();
-      setLog("<strong>こうげき！</strong>　敵のこうげきで 3ダメージ。");
+      setLog("<strong>こうげき！</strong>　敵のこうげきで "+outcome.enemyDamage+"ダメージ。");
       render(state);
       if(isLose(state)){setTimeout(()=>showEnd(false),500);return;}
       setTimeout(()=>{state.locked=false;startTurn(state);render(state);},650);
