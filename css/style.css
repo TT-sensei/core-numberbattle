@@ -87,3 +87,17 @@ body{padding:10px}
 .start-note{margin-top:12px;font-size:11px;color:#8798b0}
 .app{display:none;position:relative}.app.show{display:block}.battle-bg{position:fixed;inset:0;z-index:-1;background-position:center;background-size:cover;background-repeat:no-repeat;filter:saturate(.72) brightness(.72);transform:scale(1.03)}.app:after{content:"";position:fixed;inset:0;z-index:-1;background:rgba(238,242,247,.38);pointer-events:none}
 @media(min-width:800px) and (orientation:landscape){.app.show{display:grid}}
+
+/* battle-oriented layout */
+@media(min-width:700px){
+  body{padding:0;overflow:hidden}
+  .app{width:100%;max-width:none;min-height:100vh;padding:12px 20px 14px;display:grid;grid-template-rows:auto auto minmax(0,1fr) auto auto;gap:8px}
+  .topbar{margin:0}.status{margin:0;max-width:1100px;width:100%;margin-inline:auto}
+  .core-panel{grid-column:auto;grid-row:auto;min-height:0;height:100%;margin:0;border-radius:22px;padding:16px 28px;grid-template-columns:minmax(0,1fr) minmax(260px,36%);background:rgba(12,22,39,.88);box-shadow:0 16px 50px rgba(0,0,0,.22)}
+  .core-number{font-size:clamp(72px,11vw,132px);margin:8px 0 12px}.expression{font-size:clamp(24px,3vw,38px)}.result{font-size:14px}
+  .enemy-visual{height:100%;min-height:260px}.enemy-tag{font-size:11px}.#monsterImg{width:min(30vw,330px);height:min(30vw,330px)}.monster-name{font-size:13px;max-width:260px}
+  .hand-title{margin:0 2px}.hand{grid-template-columns:repeat(4,1fr);gap:10px}.card{min-height:92px;height:clamp(92px,13vh,125px);border-radius:17px}.card .num{font-size:clamp(42px,5vw,68px)}
+  .actions{margin:0}.log{margin:0}.rules{display:none}
+}
+.start-record{margin:12px 0 4px;font-size:13px;color:#aebbd0;font-weight:800}.start-record span{display:inline-block;margin-left:6px;color:#fff;font-size:22px;font-variant-numeric:tabular-nums}
+@media(max-width:699px){.start-record{margin-top:10px}}
