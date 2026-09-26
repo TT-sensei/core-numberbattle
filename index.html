@@ -8,13 +8,13 @@
 <link rel="stylesheet" href="./css/style.css">
 </head>
 <body>
-<main class="app">
+<div class="start-screen" id="startScreen"><div class="start-inner"><div class="start-kicker">NUMBER BATTLE</div><h1>コアバトル</h1><p>すうじをくみあわせて、コアをねらえ。</p><div class="start-monster"><img src="https://tt-sensei.github.io/navi-character-/assets/web/fantasy/monsters/zako/purun-little-magic-slime.webp" alt="" draggable="false"></div><div class="difficulty-select"><div class="start-label">難易度</div><div class="difficulty-buttons" id="difficultyButtons"><button type="button" data-difficulty="easy">かんたん</button><button type="button" data-difficulty="normal" class="active">ふつう</button><button type="button" data-difficulty="hard">むずかしい</button></div></div><button class="start-button" id="startButton">BATTLE START</button><div class="start-note">敵をたおして、どこまで連戦できる？</div></div></div><main class="app" id="gameScreen">
   <header class="topbar">
     <div>
       <div class="title">コアバトル</div>
       <div class="subtitle">すうじをくみあわせて、コアをねらえ。</div>
     </div>
-    <div class="top-actions"><select id="difficulty" aria-label="難易度"><option value="easy">かんたん</option><option value="normal">ふつう</option><option value="hard">むずかしい</option></select><button class="restart" id="restart">最初から</button></div>
+    <div class="top-actions"><button class="restart" id="restart">最初から</button></div>
   </header>
 
   <section class="status" aria-label="HP">
