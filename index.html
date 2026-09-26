@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f172a">
+<title>コアバトル</title>
+<style>
+:root{
+  --bg:#eef2f7;
+  --panel:#ffffff;
+  --ink:#172033;
+  --muted:#687386;
+  --line:#d9dee7;
+  --navy:#18243a;
+  --blue:#3b82f6;
+  --blue-soft:#eaf2ff;
+  --red:#e25555;
+  --red-soft:#fff0f0;
+  --gold:#d49a28;
+  --gold-soft:#fff7df;
+  --shadow:0 10px 30px rgba(21,31,50,.08);
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;background:var(--bg);color:var(--ink)}
+button{font:inherit}
+body{padding:12px}
+.app{width:min(100%,760px);margin:0 auto}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 10px}
+.title{font-weight:800;letter-spacing:.02em;font-size:clamp(22px,4vw,30px)}
+.subtitle{font-size:12px;color:var(--muted);margin-top:2px}
+.restart{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:12px;padding:9px 13px;font-weight:700;cursor:pointer}
+.status{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;margin-bottom:10px}
+.hpbox{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:9px 11px;box-shadow:var(--shadow)}
+.hphead{display:flex;justify-content:space-between;font-size:12px;font-weight:800;margin-bottom:6px}
+.hpbar{height:8px;border-radius:99px;background:#e7ebf1;overflow:hidden}
+.hpfill{height:100%;width:100%;transition:width .25s ease}
+.enemy .hpfill{background:var(--red)}
+.player .hpfill{background:var(--blue)}
+.vs{font-size:12px;font-weight:900;color:var(--muted)}
+.core-panel{background:var(--navy);color:#fff;border-radius:20px;padding:18px 18px 16px;text-align:center;box-shadow:var(--shadow);margin-bottom:12px}
+.core-label{font-size:12px;letter-spacing:.12em;opacity:.72;font-weight:800}
+.core-number{font-size:clamp(54px,13vw,86px);line-height:.95;font-weight:900;margin:6px 0 10px;font-variant-numeric:tabular-nums}
+.expression{min-height:31px;font-size:clamp(19px,4vw,27px);font-weight:800;letter-spacing:.04em}
+.result{margin-top:8px;min-height:22px;font-size:13px;color:#cdd7e8}
+.hand-title{display:flex;justify-content:space-between;align-items:end;margin:0 2px 7px}
+.hand-title strong{font-size:15px}
+.hand-title span{font-size:12px;color:var(--muted)}
+.hand{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+.card{position:relative;min-height:116px;border:2px solid var(--line);border-radius:17px;background:#fff;cursor:pointer;box-shadow:0 5px 16px rgba(21,31,50,.06);transition:transform .14s ease,border-color .14s ease,background .14s ease;display:flex;flex-direction:column;align-items:center;justify-content:center;user-select:none;-webkit-tap-highlight-color:transparent}
+.card:active{transform:scale(.97)}
+.card .num{font-size:clamp(38px,8vw,56px);line-height:1;font-weight:900;font-variant-numeric:tabular-nums}
+.card .op{position:absolute;top:8px;left:9px;right:9px;display:flex;justify-content:space-between;align-items:center}
+.badge{font-size:12px;font-weight:900;min-width:25px;height:25px;display:grid;place-items:center;border-radius:8px;background:#f0f3f7;color:var(--muted)}
+.state{font-size:11px;color:var(--muted);font-weight:700}
+.card.selected-plus{border-color:var(--blue);background:var(--blue-soft);transform:translateY(-4px)}
+.card.selected-minus{border-color:var(--red);background:var(--red-soft);transform:translateY(-4px)}
+.card.selected-plus .badge{background:var(--blue);color:#fff}
+.card.selected-minus .badge{background:var(--red);color:#fff}
+.actions{display:grid;grid-template-columns:1fr 1.7fr;gap:9px;margin-top:12px}
+.actions button{min-height:52px;border-radius:14px;border:1px solid var(--line);font-weight:900;cursor:pointer}
+.clear{background:#fff;color:var(--ink)}
+.attack{background:var(--navy);color:#fff;border-color:var(--navy)!important}
+.attack:disabled{opacity:.45;cursor:not-allowed}
+.log{margin-top:12px;background:#fff;border:1px solid var(--line);border-radius:15px;padding:10px 12px;min-height:46px;font-size:13px;color:var(--muted)}
+.log strong{color:var(--ink)}
+.rules{margin-top:10px}
+.rules summary{cursor:pointer;color:var(--muted);font-size:12px;font-weight:800;padding:6px 2px}
+.rules-body{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;font-size:12px;line-height:1.7;color:#4d5869}
+.rules-body b{color:var(--ink)}
+.overlay{position:fixed;inset:0;background:rgba(12,19,32,.72);display:none;place-items:center;padding:20px;z-index:10}
+.overlay.show{display:grid}
+.modal{width:min(100%,380px);background:#fff;border-radius:22px;padding:25px;text-align:center;box-shadow:0 25px 70px rgba(0,0,0,.2)}
+.modal .big{font-size:34px;font-weight:950}
+.modal p{color:var(--muted);margin:8px 0 18px}
+.modal button{width:100%;min-height:50px;border:0;border-radius:14px;background:var(--navy);color:#fff;font-weight:900;cursor:pointer}
+@media(min-width:640px){
+  body{padding:20px}
+  .hand{gap:12px}
+  .card{min-height:145px}
+  .core-panel{padding:22px}
+}
+</style>
+</head>
+<body>
+<main class="app">
+  <header class="topbar">
+    <div>
+      <div class="title">コアバトル</div>
+      <div class="subtitle">数字を組み合わせて、コアをねらえ。</div>
+    </div>
+    <button class="restart" id="restart">最初から</button>
+  </header>
+
+  <section class="status" aria-label="HP">
+    <div class="hpbox enemy">
+      <div class="hphead"><span>ENEMY</span><span id="enemyHpText">30 / 30</span></div>
+      <div class="hpbar"><div class="hpfill" id="enemyHp"></div></div>
+    </div>
+    <div class="vs">VS</div>
+    <div class="hpbox player">
+      <div class="hphead"><span>YOU</span><span id="playerHpText">20 / 20</span></div>
+      <div class="hpbar"><div class="hpfill" id="playerHp"></div></div>
+    </div>
+  </section>
+
+  <section class="core-panel">
+    <div class="core-label">CORE NUMBER</div>
+    <div class="core-number" id="core">--</div>
+    <div class="expression" id="expression">カードをえらぼう</div>
+    <div class="result" id="result">カードをタップして ＋ / − を選ぶ</div>
+  </section>
+
+  <section>
+    <div class="hand-title">
+      <strong>手札</strong>
+      <span>タップで ＋ → − → はずす</span>
+    </div>
+    <div class="hand" id="hand"></div>
+  </section>
+
+  <div class="actions">
+    <button class="clear" id="clear">えらび直す</button>
+    <button class="attack" id="attack">アタック！</button>
+  </div>
+
+  <div class="log" id="log"><strong>START</strong>　コアの数字に近づけよう。</div>
+
+  <details class="rules">
+    <summary>ルールを見る</summary>
+    <div class="rules-body">
+      コアは <b>21〜30</b>。手札は <b>1〜9の数字4枚</b>。カードを好きな枚数えらび、＋と−を使って0以上の数をつくります。<br>
+      コアを超えると攻撃失敗。コアとの差が11以上でも攻撃失敗。<br>
+      差が0なら <b>CORE BREAK</b>。差1〜2は5ダメージ、3〜4は4、5〜6は3、7〜8は2、9〜10は1。<br>
+      3枚使うと＋1、4枚使うと＋2。1〜2枚はボーナスなし。
+    </div>
+  </details>
+</main>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="big" id="modalTitle">WIN</div>
+    <p id="modalText"></p>
+    <button id="modalRestart">もう一度</button>
+  </div>
+</div>
+
+<script>
+const ENEMY_MAX = 30;
+const PLAYER_MAX = 20;
+const CORE_MIN = 21;
+const CORE_MAX = 30;
+
+let enemyHP = ENEMY_MAX;
+let playerHP = PLAYER_MAX;
+let core = 0;
+let hand = [];
+let selected = [];
+let locked = false;
+
+const $ = id => document.getElementById(id);
+const rnd = (min,max) => Math.floor(Math.random()*(max-min+1))+min;
+
+function newHand(){
+  hand = Array.from({length:4}, () => rnd(1,9));
+  selected = [];
+}
+
+function startTurn(){
+  if(locked) return;
+  core = rnd(CORE_MIN, CORE_MAX);
+  newHand();
+  render();
+  $("result").textContent = "カードをタップして ＋ / − を選ぶ";
+}
+
+function render(){
+  $("core").textContent = core;
+  $("enemyHpText").textContent = enemyHP + " / " + ENEMY_MAX;
+  $("playerHpText").textContent = playerHP + " / " + PLAYER_MAX;
+  $("enemyHp").style.width = Math.max(0, enemyHP / ENEMY_MAX * 100) + "%";
+  $("playerHp").style.width = Math.max(0, playerHP / PLAYER_MAX * 100) + "%";
+
+  const handEl = $("hand");
+  handEl.innerHTML = "";
+  hand.forEach((value,i) => {
+    const s = selected.find(x => x.i === i);
+    const card = document.createElement("button");
+    card.className = "card" + (s ? (s.sign === 1 ? " selected-plus" : " selected-minus") : "");
+    card.type = "button";
+    card.innerHTML = `
+      <div class="op">
+        <span class="badge">${s ? (s.sign === 1 ? "＋" : "−") : "・"}</span>
+        <span class="state">${s ? "使用" : "未使用"}</span>
+      </div>
+      <div class="num">${value}</div>
+    `;
+    card.addEventListener("click", () => cycleCard(i));
+    handEl.appendChild(card);
+  });
+
+  updateExpression();
+  $("attack").disabled = selected.length === 0 || locked;
+}
+
+function cycleCard(i){
+  if(locked) return;
+  const found = selected.find(x => x.i === i);
+
+  if(!found){
+    // 最初に選ぶカードは必ず「＋」。
+    // その後のカードだけ「＋ / −」を選べる。
+    selected.push({i,sign:1});
+  }else if(found.sign === 1){
+    if(selected[0].i === i){
+      found.sign = -1;
+    }else{
+      found.sign = -1;
+    }
+  }else{
+    selected = selected.filter(x => x.i !== i);
+  }
+
+  // 先頭カードがマイナスになった場合は、選択順の先頭として扱う。
+  // ただし表示上の式は自然な形にする。
+  render();
+}
+
+function currentCalc(){
+  if(!selected.length) return 0;
+  return selected.reduce((sum,s) => sum + hand[s.i] * s.sign, 0);
+}
+
+function updateExpression(){
+  if(!selected.length){
+    $("expression").textContent = "カードをえらぼう";
+    return;
+  }
+  const expr = selected.map((s,i) => {
+    const n = hand[s.i];
+    if(i === 0) return s.sign === 1 ? String(n) : "−" + n;
+    return (s.sign === 1 ? "＋" : "−") + n;
+  }).join("");
+  const total = currentCalc();
+  $("expression").textContent = expr + " ＝ " + total;
+  $("result").textContent = total < 0 ? "0未満にはできません" : "コアまであと " + Math.abs(core-total);
+}
+
+function baseDamage(diff){
+  if(diff <= 2) return 5;
+  if(diff <= 4) return 4;
+  if(diff <= 6) return 3;
+  if(diff <= 8) return 2;
+  if(diff <= 10) return 1;
+  return 0;
+}
+
+function bonus(n){
+  if(n >= 4) return 2;
+  if(n >= 3) return 1;
+  return 0;
+}
+
+function attack(){
+  if(locked || selected.length === 0) return;
+
+  const total = currentCalc();
+  const used = selected.length;
+
+  if(total < 0){
+    $("log").innerHTML = "<strong>攻撃失敗</strong>　答えが0未満になった。";
+    playerHP = Math.max(0, playerHP - 3);
+    afterAttack();
+    return;
+  }
+
+  if(total > core){
+    $("log").innerHTML = "<strong>攻撃失敗</strong>　コアを " + (total-core) + " 超えた！";
+    playerHP = Math.max(0, playerHP - 3);
+    afterAttack();
+    return;
+  }
+
+  const diff = core - total;
+
+  if(diff === 0){
+    enemyHP = 0;
+    $("log").innerHTML = "<strong>CORE BREAK!</strong>　コアを完全にとらえた！";
+    $("result").textContent = "30ダメージ";
+    afterAttack();
+    return;
+  }
+
+  const dmg = baseDamage(diff) + bonus(used);
+
+  if(diff > 10){
+    playerHP = Math.max(0, playerHP - 3);
+    $("log").innerHTML = "<strong>攻撃失敗</strong>　コアから遠すぎた。";
+    $("result").textContent = "ダメージ 0";
+  }else{
+    enemyHP = Math.max(0, enemyHP - dmg);
+    $("log").innerHTML = "<strong>" + dmg + "ダメージ！</strong>　コアとの差は " + diff + "。";
+    $("result").textContent = "ダメージ " + dmg + "（" + used + "枚）";
+  }
+
+  afterAttack();
+}
+
+function afterAttack(){
+  render();
+
+  if(enemyHP <= 0){
+    endGame(true);
+    return;
+  }
+  if(playerHP <= 0){
+    endGame(false);
+    return;
+  }
+
+  locked = true;
+  setTimeout(() => {
+    locked = false;
+    startTurn();
+  }, 650);
+}
+
+function endGame(win){
+  locked = true;
+  $("modalTitle").textContent = win ? "WIN" : "LOSE";
+  $("modalText").textContent = win
+    ? "コアをねらって、敵を倒した！"
+    : "HPが0になった。もう一度挑戦しよう。";
+  $("overlay").classList.add("show");
+}
+
+function resetGame(){
+  locked = false;
+  enemyHP = ENEMY_MAX;
+  playerHP = PLAYER_MAX;
+  $("overlay").classList.remove("show");
+  $("log").innerHTML = "<strong>START</strong>　コアの数字に近づけよう。";
+  startTurn();
+}
+
+$("attack").addEventListener("click", attack);
+$("clear").addEventListener("click", () => {
+  if(locked) return;
+  selected = [];
+  render();
+});
+$("restart").addEventListener("click", resetGame);
+$("modalRestart").addEventListener("click", resetGame);
+
+resetGame();
+</script>
+</body>
+</html>
