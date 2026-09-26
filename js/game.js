@@ -4,7 +4,7 @@ import {NAVIAN_MONSTERS} from "./monsters.js";
 const rnd=(min,max)=>Math.floor(Math.random()*(max-min+1))+min;
 
 export function createGame(){
-  return {enemyHP:ENEMY_MAX,playerHP:PLAYER_MAX,core:0,hand:[],selected:[],locked:false,monster:null};
+  return {enemyHP:ENEMY_MAX,playerHP:PLAYER_MAX,core:0,hand:[],selected:[],locked:false,monster:null,resetAvailable:true,lastTotal:null};
 }
 export function resetGame(state){
   state.enemyHP=ENEMY_MAX; state.playerHP=PLAYER_MAX; state.locked=false;
@@ -16,6 +16,8 @@ export function startTurn(state){
   state.core=rnd(CORE_MIN,CORE_MAX);
   state.hand=Array.from({length:4},()=>rnd(1,9));
   state.selected=[];
+  state.resetAvailable=true;
+  state.lastTotal=null;
 }
 export function cycleCard(state,i){
   if(state.locked)return;
@@ -27,6 +29,14 @@ export function cycleCard(state,i){
   }else state.selected=state.selected.filter(x=>x.i!==i);
 }
 export function clearSelection(state){if(!state.locked)state.selected=[];}
+export function resetCards(state){
+  if(state.locked||!state.resetAvailable)return false;
+  state.hand=Array.from({length:4},()=>rnd(1,9));
+  state.selected=[];
+  state.resetAvailable=false;
+  state.lastTotal=null;
+  return true;
+}
 export function currentCalc(state){
   return state.selected.reduce((sum,s)=>sum+state.hand[s.i]*s.sign,0);
 }
@@ -43,6 +53,7 @@ function bonus(n){if(n>=4)return 2;if(n>=3)return 1;return 0;}
 export function attack(state){
   if(state.locked||state.selected.length===0)return {type:"none"};
   const total=currentCalc(state),used=state.selected.length;
+  state.lastTotal=total;
   if(total<0){
     state.playerHP=Math.max(0,state.playerHP-3);
     return {type:"fail",message:"こたえが0みまんになった。",result:"0未満にはできません"};
