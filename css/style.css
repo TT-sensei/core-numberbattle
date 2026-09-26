@@ -236,3 +236,20 @@ body{padding:10px}
   .card{height:82px}
   .actions button{min-height:44px}
 }
+
+
+/* バトル背景をもう一段見せる */
+.battle-bg{
+  filter:saturate(.9) brightness(.86);
+}
+.app:after{
+  background:rgba(238,242,247,.18);
+}
+@media (min-width:700px) and (orientation:landscape){
+  .battle-bg{
+    filter:saturate(.9) brightness(.82);
+  }
+  .app:after{
+    background:rgba(9,18,34,.12);
+  }
+}
