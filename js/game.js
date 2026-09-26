@@ -1,13 +1,19 @@
-import {ENEMY_MAX,PLAYER_MAX,CORE_MIN,CORE_MAX} from "./constants.js";
+import {DIFFICULTIES,PLAYER_MAX,CORE_MIN,CORE_MAX,DEFAULT_DIFFICULTY} from "./constants.js";
 import {NAVIAN_MONSTERS} from "./monsters.js";
 
 const rnd=(min,max)=>Math.floor(Math.random()*(max-min+1))+min;
 
 export function createGame(){
-  return {enemyHP:ENEMY_MAX,playerHP:PLAYER_MAX,core:0,hand:[],selected:[],locked:false,monster:null,resetAvailable:true,lastTotal:null,enemyCharge:0,defeated:0};
+  return {difficulty:DEFAULT_DIFFICULTY,enemyHP:0,playerHP:PLAYER_MAX,core:0,hand:[],selected:[],locked:false,monster:null,resetAvailable:true,lastTotal:null,enemyCharge:0,defeated:0};
 }
+export function setDifficulty(state,key){
+  if(!DIFFICULTIES[key])return false;
+  state.difficulty=key;
+  return true;
+}
+function enemySettings(state){return DIFFICULTIES[state.difficulty]||DIFFICULTIES[DEFAULT_DIFFICULTY];}
 export function resetGame(state){
-  state.enemyHP=ENEMY_MAX; state.playerHP=PLAYER_MAX; state.locked=false; state.enemyCharge=0; state.defeated=0;
+  state.enemyHP=enemySettings(state).enemyHP; state.playerHP=PLAYER_MAX; state.locked=false; state.enemyCharge=0; state.defeated=0;
   state.monster=NAVIAN_MONSTERS[rnd(0,NAVIAN_MONSTERS.length-1)];
   startTurn(state);
 }
@@ -51,7 +57,7 @@ function baseDamage(diff){
 function bonus(n){if(n>=4)return 2;if(n>=3)return 1;return 0;}
 
 export function nextEnemy(state){
-  state.enemyHP=ENEMY_MAX;
+  state.enemyHP=enemySettings(state).enemyHP;
   state.defeated++;
   state.enemyCharge=0;
   state.monster=NAVIAN_MONSTERS[rnd(0,NAVIAN_MONSTERS.length-1)];
@@ -82,12 +88,12 @@ export function attack(state){
   const dmg=baseDamage(diff)+bonus(used);
   state.enemyHP=Math.max(0,state.enemyHP-dmg);
   state.enemyCharge++;
-  const enemyAttack=state.enemyCharge>=3;
+  const enemyAttack=state.enemyCharge>=enemySettings(state).enemyAttackEvery;
   if(enemyAttack){
     state.enemyCharge=0;
-    state.playerHP=Math.max(0,state.playerHP-3);
+    state.playerHP=Math.max(0,state.playerHP-enemySettings(state).enemyDamage);
   }
-  return {type:"hit",damage:dmg,diff,used,message:"コアとの差は "+diff+"。",result:"ダメージ "+dmg+"（"+used+"枚）",total,enemyAttack,enemyDamage:enemyAttack?3:0};
+  return {type:"hit",damage:dmg,diff,used,message:"コアとの差は "+diff+"。",result:"ダメージ "+dmg+"（"+used+"枚）",total,enemyAttack,enemyDamage:enemyAttack?enemySettings(state).enemyDamage:0};
 }
 export function isWin(state){return state.enemyHP<=0;}
 export function isLose(state){return state.playerHP<=0;}
